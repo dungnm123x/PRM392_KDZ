@@ -9,7 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
+import android.content.Intent;
+import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
 
 public class HomeFragment extends Fragment {
@@ -26,6 +27,13 @@ public class HomeFragment extends Fragment {
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        // Handle play Tetris button
+        binding.btnPlayTetris.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), TetrisActivity.class);
+            startActivity(intent);
+        });
+
         return root;
     }
 

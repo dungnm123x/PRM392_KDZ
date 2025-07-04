@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.lucnthe.multiplegame" />
+                  <option name="mobileSdkAppId" value="1:401837395741:android:f4491d7f400993430cdbf4" />
+                  <option name="projectId" value="multiplegame-a39c4" />
+                  <option name="projectNumber" value="401837395741" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

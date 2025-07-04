@@ -1,4 +1,4 @@
-package com.lucnthe.multiplegame.ui.dashboard;
+package com.lucnthe.multiplegame.ui.profile;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
