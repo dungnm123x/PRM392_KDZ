@@ -30,6 +30,8 @@
         <activity android:name=".ui.login.RegisterActivity" />
 
         <activity android:name=".ui.tetris.TetrisActivity"/>
+        <activity android:name=".ui.xo.XOActivity" />
+
 
     </application>
 

@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
+import com.lucnthe.multiplegame.ui.xo.XOActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -31,6 +32,12 @@ public class HomeFragment extends Fragment {
         // Handle play Tetris button
         binding.btnPlayTetris.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), TetrisActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle play Caro button
+        binding.btnPlayCaro.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), XOActivity.class);
             startActivity(intent);
         });
 
