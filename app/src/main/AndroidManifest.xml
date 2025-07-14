@@ -39,8 +39,9 @@
         <activity
             android:name=".ui.sudoku.SudokuActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ui.tetris.TetrisActivity"/>
         <activity android:name=".ui.xo.XOActivity" />
+        <activity android:name=".ui.puzzle.Mainpuzzle"/>
+        <activity android:name=".ui.puzzle.PuzzleActivity"/>
     </application>
 
 </manifest>

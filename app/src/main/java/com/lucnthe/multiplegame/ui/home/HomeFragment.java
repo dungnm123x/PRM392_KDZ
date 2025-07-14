@@ -1,5 +1,6 @@
 package com.lucnthe.multiplegame.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import com.lucnthe.multiplegame.ui.model.GameItem;
 import com.lucnthe.multiplegame.ui.sudoku.SudokuActivity;
 import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
-import com.lucnthe.multiplegame.ui.xo.XoOptionsActivity;
+
 import java.util.ArrayList;
 import java.util.List;
 import com.lucnthe.multiplegame.ui.xo.XOActivity;
@@ -34,17 +35,12 @@ public class HomeFragment extends Fragment {
             gameList.add(new GameItem("Tetris", R.drawable.ic_tetris, TetrisActivity.class));
             gameList.add(new GameItem("2468", R.drawable.ic_2468, game2048activity.class));
             gameList.add(new GameItem("Sudoku", R.drawable.ic_sudoku, SudokuActivity.class));
+            gameList.add(new GameItem("Caro", R.drawable.ic_2468, XOActivity.class));
         }
 
         GameAdapter adapter = new GameAdapter(requireContext(), gameList);
         binding.rvGames.setLayoutManager(new GridLayoutManager(requireContext(), 2)); // 2 cột
         binding.rvGames.setAdapter(adapter);
-
-        // Handle play Caro button
-        binding.btnPlayCaro.setOnClickListener(v -> {
-            Intent intent = new Intent(requireContext(), XOActivity.class);
-            startActivity(intent);
-        });
 
         return root;
     }
