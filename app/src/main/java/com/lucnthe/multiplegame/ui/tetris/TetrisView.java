@@ -14,9 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.os.Handler;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.lucnthe.multiplegame.R;
+import com.lucnthe.multiplegame.ui.leaderboard.LeaderboardEntry;
 
 
 public class TetrisView extends View {
@@ -79,12 +85,13 @@ public class TetrisView extends View {
         if (!currentTetromino.moveDown(grid)) {
             currentTetromino.lockToGrid(grid, gridColor);
             int linesClearedThisTurn = clearLines();
-            if (linesClearedThisTurn > 0) {
-                soundPool.play(soundClear, 1, 1, 0, 0, 1);
-            } else {
-                soundPool.play(soundTick, 1, 1, 0, 0, 1);
+            if (soundPool != null && soundTick != 0 && soundClear != 0) {
+                if (linesClearedThisTurn > 0) {
+                    soundPool.play(soundClear, 1, 1, 0, 0, 1);
+                } else {
+                    soundPool.play(soundTick, 1, 1, 0, 0, 1);
+                }
             }
-
 
             spawnNewTetromino();
             if (currentTetromino.collides(grid)) {
@@ -103,30 +110,68 @@ public class TetrisView extends View {
         }
     }
     private void showGameOverDialog() {
-        handler.removeCallbacks(gameTick);
-        isPaused = true;
+        if (!(getContext() instanceof Activity)) return;
+        Activity activity = (Activity) getContext();
 
-        AlertDialog dialog = new AlertDialog.Builder(getContext())
+        if (activity.isFinishing() || activity.isDestroyed()) return;
+
+        isPaused = true;
+        handler.removeCallbacks(gameTick);
+        saveScoreToLeaderboard(score);
+        AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setTitle("Game Over")
                 .setMessage("Your Score: " + score + "\nHigh Score: " + highScore)
                 .setCancelable(false)
-                .setPositiveButton("Play Again", null) // xử lý thủ công sau
-                .setNegativeButton("Exit", (d, which) -> {
-                    if (getContext() instanceof Activity) {
-                        ((Activity) getContext()).finish();
-                    }
-                })
+                .setPositiveButton("Play Again", null)
+                .setNegativeButton("Exit", (d, which) -> activity.finish())
                 .create();
 
         dialog.setOnShowListener(d -> {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                dialog.dismiss();      // 🟢 đóng dialog trước
-                resetGame();           // 🟢 reset game sau
+                dialog.dismiss();
+                resetGame();
             });
         });
 
         dialog.show();
     }
+    private void saveScoreToLeaderboard(int score) {
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(userDoc -> {
+                    String username = userDoc.getString("username");
+
+                    if (username == null || username.isEmpty()) {
+                        Toast.makeText(getContext(), "Không thể lấy tên người dùng", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    db.collection("leaderboards")
+                            .document("tetris")
+                            .collection("scores")
+                            .document(uid)
+                            .get()
+                            .addOnSuccessListener(snapshot -> {
+                                Long oldScore = snapshot.getLong("score");
+
+                                if (oldScore == null || score > oldScore) {
+                                    Map<String, Object> data = new HashMap<>();
+                                    data.put("username", username);
+                                    data.put("score", score);
+                                    data.put("timestamp", System.currentTimeMillis());
+
+                                    db.collection("leaderboards")
+                                            .document("tetris")
+                                            .collection("scores")
+                                            .document(uid)
+                                            .set(data);
+                                }
+                            });
+                });
+    }
+
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

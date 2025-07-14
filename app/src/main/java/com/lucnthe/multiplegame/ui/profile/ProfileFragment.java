@@ -22,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.lucnthe.multiplegame.databinding.FragmentProfileBinding;
 import com.lucnthe.multiplegame.ui.cloudinary.CloudinaryService;
 import com.lucnthe.multiplegame.ui.cloudinary.FileUtils;
+import com.lucnthe.multiplegame.ui.login.LoginActivity;
 
 import org.json.JSONObject;
 
@@ -82,6 +83,14 @@ public class ProfileFragment extends Fragment {
                     .update("username", newUsername)
                     .addOnSuccessListener(unused -> Toast.makeText(getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show())
                     .addOnFailureListener(e -> Toast.makeText(getContext(), "Lỗi: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        });
+        binding.btnLogout.setOnClickListener(v -> {
+            auth.signOut();
+
+            // Chuyển người dùng về màn hình đăng nhập
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
         return root;
