@@ -11,7 +11,6 @@ import android.widget.TextView;
 import android.graphics.Color;
 import android.view.Gravity;
 import androidx.appcompat.widget.Toolbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,15 +21,18 @@ import com.lucnthe.multiplegame.ui.leaderboard.LeaderboardActivity;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
 public class game2048activity extends AppCompatActivity {
 
-    private int[][] board = new int[4][4];
-    private TextView[][] cells = new TextView[4][4];
+    private static final int SIZE = 6;
+    private int[][] board = new int[SIZE][SIZE];
+    private TextView[][] cells = new TextView[SIZE][SIZE];
     private GridLayout gridLayout;
     private Random random = new Random();
     private GestureDetector gestureDetector;
     private int score = 0;
     private TextView tvScore;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,28 +58,29 @@ public class game2048activity extends AppCompatActivity {
         gestureDetector = new GestureDetector(this, new SwipeGesture());
 
         initBoard();
-        loadGame();        // ← phải load dữ liệu trước khi hiển thị
+        loadGame();
         updateScoreUI();
         updateUI();
-
     }
 
     private void initBoard() {
         gridLayout.removeAllViews();
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        gridLayout.setRowCount(SIZE);
+        gridLayout.setColumnCount(SIZE);
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 TextView tv = new TextView(this);
                 tv.setText("");
                 tv.setGravity(Gravity.CENTER);
                 tv.setBackgroundColor(Color.LTGRAY);
-                tv.setTextSize(28);
+                tv.setTextSize(18);
 
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
                 params.rowSpec = GridLayout.spec(i, 1f);
                 params.columnSpec = GridLayout.spec(j, 1f);
                 params.width = 0;
                 params.height = 0;
-                params.setMargins(8, 8, 8, 8);
+                params.setMargins(6, 6, 6, 6);
 
                 tv.setLayoutParams(params);
                 gridLayout.addView(tv);
@@ -88,38 +91,39 @@ public class game2048activity extends AppCompatActivity {
 
     private void resetGame() {
         score = 0;
-        board = new int[4][4];
+        board = new int[SIZE][SIZE];
         spawnRandom();
         spawnRandom();
         updateUI();
         updateScoreUI();
-        saveGame(); // lưu lại reset
+        saveGame();
     }
 
     private void saveGame() {
         SharedPreferences prefs = getSharedPreferences("game2048", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
                 editor.putInt("cell_" + i + "_" + j, board[i][j]);
 
         editor.putInt("score", score);
         editor.apply();
     }
+
     private void loadGame() {
         SharedPreferences prefs = getSharedPreferences("game2048", MODE_PRIVATE);
 
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
                 board[i][j] = prefs.getInt("cell_" + i + "_" + j, 0);
 
         score = prefs.getInt("score", 0);
     }
 
     private void updateUI() {
-        for (int i = 0; i < 4; i++) {
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
                 int val = board[i][j];
                 cells[i][j].setText(val == 0 ? "" : String.valueOf(val));
                 cells[i][j].setBackgroundColor(getColorForValue(val));
@@ -127,12 +131,14 @@ public class game2048activity extends AppCompatActivity {
             }
         }
     }
+
     private void updateScoreUI() {
         tvScore.setText("Score: " + score);
     }
+
     private int getColorForValue(int value) {
         switch (value) {
-            case 0: return Color.parseColor("#CDC1B4"); // ô trống
+            case 0: return Color.parseColor("#CDC1B4");
             case 2: return Color.parseColor("#EEE4DA");
             case 4: return Color.parseColor("#EDE0C8");
             case 8: return Color.parseColor("#F2B179");
@@ -144,103 +150,86 @@ public class game2048activity extends AppCompatActivity {
             case 512: return Color.parseColor("#EDC850");
             case 1024: return Color.parseColor("#EDC53F");
             case 2048: return Color.parseColor("#EDC22E");
-            default: return Color.parseColor("#3C3A32"); // > 2048
+            default: return Color.parseColor("#3C3A32");
         }
     }
 
     private void spawnRandom() {
-        int x, y;
         if (isBoardFull()) return;
-
+        int x, y;
         do {
-            x = random.nextInt(4);
-            y = random.nextInt(4);
+            x = random.nextInt(SIZE);
+            y = random.nextInt(SIZE);
         } while (board[x][y] != 0);
 
-        board[x][y] = random.nextInt(10) < 9 ? 2 : 4; // 90% là 2, 10% là 4
+        board[x][y] = random.nextInt(10) < 9 ? 2 : 4;
     }
+
     private boolean isBoardFull() {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
                 if (board[i][j] == 0) return false;
         return true;
     }
 
-
     private boolean slideLeft() {
         boolean moved = false;
 
-        for (int i = 0; i < 4; i++) {
-            int[] newRow = new int[4];
+        for (int i = 0; i < SIZE; i++) {
+            int[] newRow = new int[SIZE];
             int index = 0;
             int last = 0;
-            for (int j = 0; j < 4; j++) {
+            for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] != 0) {
                     if (board[i][j] == last) {
                         newRow[index - 1] *= 2;
                         score += newRow[index - 1];
-                        if (newRow[index - 1] == 2048) {
-                            showWinDialog();
-                        }
+                        if (newRow[index - 1] == 2048) showWinDialog();
                         last = 0;
                         moved = true;
-                    }
-                    else {
+                    } else {
                         newRow[index++] = board[i][j];
                         last = board[i][j];
                     }
                 }
             }
-
-            for (int j = 0; j < 4; j++) {
-                if (board[i][j] != newRow[j]) {
-                    moved = true;
-                }
+            for (int j = 0; j < SIZE; j++) {
+                if (board[i][j] != newRow[j]) moved = true;
                 board[i][j] = newRow[j];
             }
         }
         return moved;
     }
-    private void showWinDialog() {
-        uploadScoreToFirebase(); // Gửi điểm
-        new AlertDialog.Builder(this)
-                .setTitle("Bạn đã thắng!")
-                .setMessage("Chúc mừng, bạn đã đạt 2048!")
-                .setPositiveButton("Tiếp tục", null)
-                .setNegativeButton("Reset", (d, w) -> resetGame())
-                .show();
+
+    private void rotateBoardCW() {
+        int[][] newBoard = new int[SIZE][SIZE];
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++)
+                newBoard[j][SIZE - 1 - i] = board[i][j];
+        board = newBoard;
     }
+
     private boolean canMove() {
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++) {
+        for (int i = 0; i < SIZE; i++)
+            for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == 0) return true;
-                if (j < 3 && board[i][j] == board[i][j+1]) return true;
-                if (i < 3 && board[i][j] == board[i+1][j]) return true;
+                if (j < SIZE - 1 && board[i][j] == board[i][j + 1]) return true;
+                if (i < SIZE - 1 && board[i][j] == board[i + 1][j]) return true;
             }
         return false;
     }
 
-    private void rotateBoardCW() {
-        int[][] newBoard = new int[4][4];
-        for (int i = 0; i < 4; i++)
-            for (int j = 0; j < 4; j++)
-                newBoard[j][3 - i] = board[i][j];
-        board = newBoard;
-    }
-
     private void move(Direction dir) {
-        boolean moved = false;
-
         for (int i = 0; i < dir.rotations; i++) rotateBoardCW();
 
-        moved = slideLeft();
+        boolean moved = slideLeft();
 
         for (int i = 0; i < (4 - dir.rotations) % 4; i++) rotateBoardCW();
 
         if (moved) {
             spawnRandom();
             if (!canMove()) {
-                uploadScoreToFirebase(); // Ghi điểm trước khi Dialog hiện
+                uploadScoreToFirebase();
                 showGameOverDialog();
             }
             updateUI();
@@ -248,8 +237,17 @@ public class game2048activity extends AppCompatActivity {
         }
     }
 
+    private void showWinDialog() {
+        uploadScoreToFirebase();
+        new AlertDialog.Builder(this)
+                .setTitle("Bạn đã thắng!")
+                .setMessage("Chúc mừng, bạn đã đạt 2048!")
+                .setPositiveButton("Tiếp tục", null)
+                .setNegativeButton("Reset", (d, w) -> resetGame())
+                .show();
+    }
+
     private void showGameOverDialog() {
-        uploadScoreToFirebase(); // Gửi điểm
         new AlertDialog.Builder(this)
                 .setTitle("Game Over")
                 .setMessage("Không còn nước đi nào hợp lệ!")
@@ -261,7 +259,6 @@ public class game2048activity extends AppCompatActivity {
     enum Direction {
         UP(3), DOWN(1), LEFT(0), RIGHT(2);
         int rotations;
-
         Direction(int r) { this.rotations = r; }
     }
 
@@ -286,6 +283,7 @@ public class game2048activity extends AppCompatActivity {
     public boolean onTouchEvent(MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
     }
+
     private void uploadScoreToFirebase() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -294,7 +292,6 @@ public class game2048activity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
                     String username = doc.getString("username");
 
-                    // Truy vấn điểm hiện tại đã lưu trên leaderboard
                     db.collection("leaderboards")
                             .document("game2048")
                             .collection("scores")
@@ -319,25 +316,18 @@ public class game2048activity extends AppCompatActivity {
                 });
     }
 
-
     @Override
     protected void onPause() {
         super.onPause();
         saveGame();
-
-        if (score > 0) {
-            uploadScoreToFirebase(); // ghi điểm nếu đã chơi
-        }
+        if (score > 0) uploadScoreToFirebase();
     }
-
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (isFirstTime()) {
-            resetGame(); // khởi tạo game mới
-        } else {
+        if (isFirstTime()) resetGame();
+        else {
             loadGame();
             updateUI();
             updateScoreUI();
@@ -346,7 +336,7 @@ public class game2048activity extends AppCompatActivity {
 
     private boolean isFirstTime() {
         SharedPreferences prefs = getSharedPreferences("game2048", MODE_PRIVATE);
-        return prefs.getInt("cell_0_0", -1) == -1; // nếu chưa có dữ liệu lưu
+        return prefs.getInt("cell_0_0", -1) == -1;
     }
 
     @Override
@@ -354,5 +344,4 @@ public class game2048activity extends AppCompatActivity {
         finish();
         return true;
     }
-
 }
