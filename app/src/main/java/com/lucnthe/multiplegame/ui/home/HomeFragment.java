@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import com.lucnthe.multiplegame.R;
 import com.lucnthe.multiplegame.ui.game2048.game2048activity;
 import com.lucnthe.multiplegame.ui.model.GameItem;
+import com.lucnthe.multiplegame.ui.puzzle.Mainpuzzle;
 import com.lucnthe.multiplegame.ui.sudoku.SudokuActivity;
 import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
@@ -36,6 +37,7 @@ public class HomeFragment extends Fragment {
             gameList.add(new GameItem("2468", R.drawable.ic_2468, game2048activity.class));
             gameList.add(new GameItem("Sudoku", R.drawable.ic_sudoku, SudokuActivity.class));
             gameList.add(new GameItem("Caro", R.drawable.ic_2468, XOActivity.class));
+            gameList.add(new GameItem("Puzzle", R.drawable.ic_tetris, Mainpuzzle.class));
         }
 
         GameAdapter adapter = new GameAdapter(requireContext(), gameList);

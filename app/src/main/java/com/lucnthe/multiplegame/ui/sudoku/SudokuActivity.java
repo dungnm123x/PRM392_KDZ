@@ -39,6 +39,7 @@ public class SudokuActivity extends AppCompatActivity {
 
     private long startTime;
     private TextView tvTimer;
+    private long pauseTime = 0;
     private TextView tvCurrentScore;
     private TextView tvBestScore;
 
@@ -188,22 +189,36 @@ public class SudokuActivity extends AppCompatActivity {
                 });
             }
         }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!hasCheckedContinueDialog) {
+        SharedPreferences prefs = getSharedPreferences("sudoku", MODE_PRIVATE);
+
+        // ✅ Luôn kiểm tra lại mỗi lần resume, miễn là có dữ liệu
+        if (!hasCheckedContinueDialog && prefs.contains("board")) {
             checkContinueGame();
             hasCheckedContinueDialog = true;
+        } else if (sudokuGame != null) {
+            if (pauseTime > 0) {
+                long pauseDuration = System.currentTimeMillis() - pauseTime;
+                startTime += pauseDuration;
+            }
+            timerHandler.postDelayed(timerRunnable, 0);
         }
     }
+
 
     @Override
     protected void onPause() {
         super.onPause();
-        saveGameToPrefs();
-        stopTimer();
+        if (!isFinishing()) {
+            pauseTime = System.currentTimeMillis();
+            saveGameToPrefs();
+            stopTimer();
+        }
     }
 
     private void checkContinueGame() {
@@ -251,9 +266,9 @@ public class SudokuActivity extends AppCompatActivity {
         }
         mistakeCount = 0;
         tvMistake.setText("Lỗi: 0/3");
-        hintLeft = 3;
-        tvHintCount.setText("3");
-
+        hintLeft = prefs.getInt("hintLeft", 3);
+        tvHintCount.setText(String.valueOf(hintLeft));
+        pauseTime = prefs.getLong("pauseTime", 0);
         currentDifficulty = prefs.getString("difficulty", "medium");
         sudokuGame = new SudokuGame(board, fixedCells); // ✅ dùng constructor mới
         sudokuGame.addScore((int) prefs.getLong("score", 0));
@@ -269,11 +284,18 @@ public class SudokuActivity extends AppCompatActivity {
         boardView.setLayoutParams(params);
 
         startTime = prefs.getLong("startTime", System.currentTimeMillis());
-        timerHandler.postDelayed(timerRunnable, 0);
 
         updateCurrentScoreView();
         updateKeyboardStatus();
         updateBestScoreFromFirebase();
+
+        if (pauseTime > 0) {
+            long pauseDuration = System.currentTimeMillis() - pauseTime;
+            startTime += pauseDuration;
+        }
+        timerHandler.removeCallbacks(timerRunnable);
+        timerHandler.postDelayed(timerRunnable, 0);
+
     }
 
     private void showCorruptedDataFallback() {
@@ -295,10 +317,12 @@ public class SudokuActivity extends AppCompatActivity {
 
         getSharedPreferences("sudoku", MODE_PRIVATE).edit()
                 .putString("board", boardBuilder.toString())
-                .putString("fixed", fixedBuilder.toString()) // ✅ mới
+                .putString("fixed", fixedBuilder.toString())
                 .putString("difficulty", currentDifficulty)
                 .putLong("score", sudokuGame.getCurrentScore())
                 .putLong("startTime", startTime)
+                .putLong("pauseTime", pauseTime)
+                .putInt("hintLeft", hintLeft)
                 .apply();
     }
 

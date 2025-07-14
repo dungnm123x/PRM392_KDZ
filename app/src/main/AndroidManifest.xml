@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -35,13 +35,17 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.game2048.game2048activity"
-            android:theme="@style/Theme.MultipleGame" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.sudoku.SudokuActivity"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ui.xo.XOActivity" />
-        <activity android:name=".ui.puzzle.Mainpuzzle"/>
-        <activity android:name=".ui.puzzle.PuzzleActivity"/>
+        <activity android:name=".ui.xo.XOActivity"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.puzzle.Mainpuzzle"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ui.puzzle.PuzzleActivity"
+            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

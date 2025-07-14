@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -71,6 +72,14 @@ public class PuzzleActivity extends AppCompatActivity implements PuzzleAdapter.P
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_puzzle);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Giải Puzzle");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         // Get data from Intent
         String imageUriString = getIntent().getStringExtra("imageUri");
@@ -563,4 +572,10 @@ public class PuzzleActivity extends AppCompatActivity implements PuzzleAdapter.P
             startTimer();
         }
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
 }
