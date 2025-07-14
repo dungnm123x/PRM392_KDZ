@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.lucnthe.multiplegame.R;
 
@@ -27,6 +28,12 @@ public class XOActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_xo);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         GridLayout grid = findViewById(R.id.gridLayout);
         txtTurn = findViewById(R.id.txtTurn);
@@ -289,4 +296,10 @@ public class XOActivity extends AppCompatActivity {
             for (int c = 0; c < SIZE; c++)
                 buttons[r][c].setText("");
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
 }

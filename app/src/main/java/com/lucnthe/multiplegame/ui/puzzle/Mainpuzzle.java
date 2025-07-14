@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,7 +30,16 @@ public class Mainpuzzle extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main_puzzle);
+// Setup Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar); // dùng toolbar làm ActionBar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("Chọn ảnh & kích thước"); // Optional
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true); // hiện nút back
+        }
 
+        // Xử lý sự kiện back
+        toolbar.setNavigationOnClickListener(v -> finish());
         Button selectImageButton = findViewById(R.id.selectImageButton);
         sizeRadioGroup = findViewById(R.id.sizeRadioGroup);
         Button startButton = findViewById(R.id.startButton);
@@ -93,5 +103,11 @@ public class Mainpuzzle extends AppCompatActivity {
             imagePreview.setVisibility(View.VISIBLE);
         }
     }
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
 }
 

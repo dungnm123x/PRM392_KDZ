@@ -39,6 +39,7 @@ public class SudokuActivity extends AppCompatActivity {
 
     private long startTime;
     private TextView tvTimer;
+    private long pauseTime = 0;
     private TextView tvCurrentScore;
     private TextView tvBestScore;
 
@@ -121,13 +122,21 @@ public class SudokuActivity extends AppCompatActivity {
             if (SudokuGenerator.solveSudoku(currentBoard)) {
                 sudokuGame.board = currentBoard;
 
+                // ✅ cập nhật điểm cuối cùng
                 int finalScore = sudokuGame.getCurrentScore();
+
+                // ✅ cập nhật view
                 boardView.invalidate();
                 updateCurrentScoreView();
                 updateKeyboardStatus();
+
+                // ✅ dừng thời gian
                 stopTimer();
+
+                // ✅ lưu điểm
                 saveScoreToLeaderboard(finalScore);
 
+                // ✅ thông báo hoàn thành
                 new AlertDialog.Builder(this)
                         .setTitle("🎉 Hoàn thành!")
                         .setMessage("Bạn đã giải xong bảng Sudoku.\nĐiểm: " + finalScore)
@@ -141,6 +150,7 @@ public class SudokuActivity extends AppCompatActivity {
                 Toast.makeText(this, "❌ Không thể giải được bảng hiện tại!", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         btnReset.setOnClickListener(v -> {
             sudokuGame = new SudokuGame(currentDifficulty);
@@ -179,22 +189,36 @@ public class SudokuActivity extends AppCompatActivity {
                 });
             }
         }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!hasCheckedContinueDialog) {
+        SharedPreferences prefs = getSharedPreferences("sudoku", MODE_PRIVATE);
+
+        // ✅ Luôn kiểm tra lại mỗi lần resume, miễn là có dữ liệu
+        if (!hasCheckedContinueDialog && prefs.contains("board")) {
             checkContinueGame();
             hasCheckedContinueDialog = true;
+        } else if (sudokuGame != null) {
+            if (pauseTime > 0) {
+                long pauseDuration = System.currentTimeMillis() - pauseTime;
+                startTime += pauseDuration;
+            }
+            timerHandler.postDelayed(timerRunnable, 0);
         }
     }
+
 
     @Override
     protected void onPause() {
         super.onPause();
-        saveGameToPrefs();
-        stopTimer();
+        if (!isFinishing()) {
+            pauseTime = System.currentTimeMillis();
+            saveGameToPrefs();
+            stopTimer();
+        }
     }
 
     private void checkContinueGame() {
@@ -240,15 +264,13 @@ public class SudokuActivity extends AppCompatActivity {
             showCorruptedDataFallback();
             return;
         }
-
         mistakeCount = 0;
         tvMistake.setText("Lỗi: 0/3");
-
-        hintLeft = prefs.getInt("hintLeft", 3); // ✅ load hintLeft
+        hintLeft = prefs.getInt("hintLeft", 3);
         tvHintCount.setText(String.valueOf(hintLeft));
-
+        pauseTime = prefs.getLong("pauseTime", 0);
         currentDifficulty = prefs.getString("difficulty", "medium");
-        sudokuGame = new SudokuGame(board, fixedCells);
+        sudokuGame = new SudokuGame(board, fixedCells); // ✅ dùng constructor mới
         sudokuGame.addScore((int) prefs.getLong("score", 0));
 
         boardView = new SudokuBoardView(this, sudokuGame);
@@ -262,11 +284,18 @@ public class SudokuActivity extends AppCompatActivity {
         boardView.setLayoutParams(params);
 
         startTime = prefs.getLong("startTime", System.currentTimeMillis());
-        timerHandler.postDelayed(timerRunnable, 0);
 
         updateCurrentScoreView();
         updateKeyboardStatus();
         updateBestScoreFromFirebase();
+
+        if (pauseTime > 0) {
+            long pauseDuration = System.currentTimeMillis() - pauseTime;
+            startTime += pauseDuration;
+        }
+        timerHandler.removeCallbacks(timerRunnable);
+        timerHandler.postDelayed(timerRunnable, 0);
+
     }
 
     private void showCorruptedDataFallback() {
@@ -292,7 +321,8 @@ public class SudokuActivity extends AppCompatActivity {
                 .putString("difficulty", currentDifficulty)
                 .putLong("score", sudokuGame.getCurrentScore())
                 .putLong("startTime", startTime)
-                .putInt("hintLeft", hintLeft) // ✅ save hintLeft
+                .putLong("pauseTime", pauseTime)
+                .putInt("hintLeft", hintLeft)
                 .apply();
     }
 
@@ -328,6 +358,7 @@ public class SudokuActivity extends AppCompatActivity {
                     tvCurrentScore.setText("Điểm hiện tại: 0");
                     updateKeyboardStatus();
                     updateBestScoreFromFirebase();
+
                 })
                 .setCancelable(false)
                 .show();
@@ -385,7 +416,6 @@ public class SudokuActivity extends AppCompatActivity {
                     }
                 });
     }
-
     public void increaseMistakeCount() {
         mistakeCount++;
         tvMistake.setText("Lỗi: " + mistakeCount + "/3");
@@ -468,6 +498,7 @@ public class SudokuActivity extends AppCompatActivity {
                                             .document(uid)
                                             .set(data);
 
+                                    // ✅ Đồng bộ lại kỷ lục local
                                     String key = "best_score_" + currentDifficulty;
                                     getSharedPreferences("profile", MODE_PRIVATE)
                                             .edit()
