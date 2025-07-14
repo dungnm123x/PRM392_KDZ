@@ -35,7 +35,7 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.game2048.game2048activity"
-            android:theme="@style/Theme.MultipleGame" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.sudoku.SudokuActivity"
             android:theme="@style/AppTheme" />
