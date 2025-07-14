@@ -9,8 +9,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-
+import android.content.Intent;
+import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
+import com.lucnthe.multiplegame.ui.xo.XOActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -26,6 +28,19 @@ public class HomeFragment extends Fragment {
 
         final TextView textView = binding.textHome;
         homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        // Handle play Tetris button
+        binding.btnPlayTetris.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), TetrisActivity.class);
+            startActivity(intent);
+        });
+
+        // Handle play Caro button
+        binding.btnPlayCaro.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), XOActivity.class);
+            startActivity(intent);
+        });
+
         return root;
     }
 
