@@ -36,30 +36,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         loadLeaderboard(game); // 👈 Khởi chạy loadLeaderboard
     }
 
-    //    private void loadLeaderboard(String game) {
-//        FirebaseFirestore.getInstance()
-//                .collection("leaderboards")
-//                .document(game)
-//                .collection("scores")
-//                .orderBy("score", Query.Direction.DESCENDING)
-//                .limit(10)
-//                .get()
-//                .addOnSuccessListener(snapshot -> {
-//                    entryList.clear();
-//                    for (DocumentSnapshot doc : snapshot) {
-//                        String name = doc.getString("username");
-//                        long score = doc.getLong("score");
-//                        entryList.add(new LeaderboardEntry(name, score));
-//                        Log.d("LEADERBOARD", "Doc: " + doc.getData());
-//                    }
-//                    adapter.notifyDataSetChanged();
-//                    Log.d("LEADERBOARD", "Game = " + game);
-//                    Log.d("LEADERBOARD", "Snapshot size = " + snapshot.size());
-//
-//                });
-//
-//
-//    }
     private void loadLeaderboard(String game) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String currentUid = FirebaseAuth.getInstance().getCurrentUser().getUid();

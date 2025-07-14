@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.lucnthe.multiplegame"
+    namespace = "com. ,ucnthe.multiplegame"
     compileSdk = 35
 
     defaultConfig {
