@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="8dp"
+    tools:context=".ui.sudoku.SudokuActivity">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/purple_500"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:titleTextColor="@android:color/white" />
+
+    <!-- Thông tin: Timer, Điểm, Lỗi, Kỷ lục -->
+    <LinearLayout
+        android:id="@+id/infoContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="16dp"
+        android:gravity="center_vertical"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏱ 00:00"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#333" />
+
+            <TextView
+                android:id="@+id/tvCurrentScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Điểm hiện tại: 0"
+                android:textSize="14sp"
+                android:textColor="#888" />
+
+            <TextView
+                android:id="@+id/tvMistake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Lỗi: 0/3"
+                android:textSize="14sp"
+                android:textColor="#FF4444" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="0.5"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvBestScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏆 Kỷ lục: 0"
+                android:textSize="14sp"
+                android:textColor="#555" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bảng Sudoku -->
+    <FrameLayout
+        android:id="@+id/board_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Bàn phím số 1-9 + X -->
+    <GridLayout
+        android:id="@+id/keyboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="5"
+        android:padding="8dp"
+        android:layout_marginBottom="8dp">
+
+        <Button android:text="1" style="@style/SudokuKey" />
+        <Button android:text="2" style="@style/SudokuKey" />
+        <Button android:text="3" style="@style/SudokuKey" />
+        <Button android:text="4" style="@style/SudokuKey" />
+        <Button android:text="5" style="@style/SudokuKey" />
+        <Button android:text="6" style="@style/SudokuKey" />
+        <Button android:text="7" style="@style/SudokuKey" />
+        <Button android:text="8" style="@style/SudokuKey" />
+        <Button android:text="9" style="@style/SudokuKey" />
+        <Button android:text="X" style="@style/SudokuKey" />
+    </GridLayout>
+
+    <!-- Nút Hint, Solve, Reset, New -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:padding="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Nút Hint có số -->
+            <FrameLayout
+                android:id="@+id/hintContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp">
+
+                <Button
+                    android:id="@+id/btnHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="HINT" />
+
+                <TextView
+                    android:id="@+id/tvHintCount"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="-4dp"
+                    android:layout_marginEnd="-4dp"
+                    android:background="@drawable/circle_hint_bg"
+                    android:text="3"
+                    android:textSize="10sp"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:elevation="4dp" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnSolve"
+                android:text="SOLVE"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnReset"
+                android:text="RESET"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btnNewGame"
+                android:text="NEW GAME"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Nút Bảng xếp hạng -->
+    <Button
+        android:id="@+id/btnLeaderboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔝 XEM BẢNG XẾP HẠNG"
+        android:textAllCaps="true"
+        android:textStyle="bold"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/purple_700"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

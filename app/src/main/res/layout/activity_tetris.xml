@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tetrisContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <!-- Score -->
+    <TextView
+        android:id="@+id/scoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score: 0"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_margin="12dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <!-- Level -->
+    <TextView
+        android:id="@+id/levelText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Level: 1"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"
+        android:layout_margin="12dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true" />
+
+    <!-- Pause Button -->
+    <Button
+        android:id="@+id/btnPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pause"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="12dp" />
+
+    <!-- High Score -->
+    <TextView
+        android:id="@+id/highScoreText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="High: 0"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:layout_below="@id/scoreText"
+        android:layout_alignStart="@id/scoreText"
+        android:layout_marginTop="4dp" />
+
+    <!-- Game View -->
+    <com.lucnthe.multiplegame.ui.tetris.TetrisView
+        android:id="@+id/tetrisView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/highScoreText"
+        android:layout_above="@id/controlButtons" />
+
+    <!-- Control Buttons -->
+    <LinearLayout
+        android:id="@+id/controlButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="8dp"
+        android:background="#66000000">
+
+        <Button
+            android:id="@+id/btnLeft"
+            android:text="◀"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+
+        <Button
+            android:id="@+id/btnRotate"
+            android:text="⟳"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp" />
+
+        <Button
+            android:id="@+id/btnRight"
+            android:text="▶"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+
+        <Button
+            android:id="@+id/btnDrop"
+            android:text="↓"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="12dp" />
+    </LinearLayout>
+</RelativeLayout>
