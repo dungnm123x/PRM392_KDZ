@@ -16,9 +16,9 @@ import com.lucnthe.multiplegame.ui.sudoku.SudokuActivity;
 import com.lucnthe.multiplegame.ui.tetris.TetrisActivity;
 import com.lucnthe.multiplegame.databinding.FragmentHomeBinding;
 import com.lucnthe.multiplegame.ui.xo.XoOptionsActivity;
-
 import java.util.ArrayList;
 import java.util.List;
+import com.lucnthe.multiplegame.ui.xo.XOActivity;
 
 public class HomeFragment extends Fragment {
 
@@ -39,6 +39,12 @@ public class HomeFragment extends Fragment {
         GameAdapter adapter = new GameAdapter(requireContext(), gameList);
         binding.rvGames.setLayoutManager(new GridLayoutManager(requireContext(), 2)); // 2 cột
         binding.rvGames.setAdapter(adapter);
+
+        // Handle play Caro button
+        binding.btnPlayCaro.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), XOActivity.class);
+            startActivity(intent);
+        });
 
         return root;
     }
