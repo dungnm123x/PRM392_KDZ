@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.lucnthe.multiplegame.ui.notifications.NotificationsFragment"
+        android:name="com.lucnthe.multiplegame.ui.sudoku.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 </navigation>
