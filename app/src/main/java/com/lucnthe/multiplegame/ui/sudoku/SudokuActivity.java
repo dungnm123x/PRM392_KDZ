@@ -52,7 +52,12 @@ public class SudokuActivity extends AppCompatActivity {
             seconds %= 60;
 
             tvTimer.setText(String.format("⏱ %02d:%02d", minutes, seconds));
-            long score = calculateScore(elapsed);
+
+            int elapsedSinceStart = (int) (elapsed / 1000);
+            if (elapsedSinceStart % 10 == 0 && elapsedSinceStart != 0) {
+                sudokuGame.addScore(-10);
+            }
+
             tvCurrentScore.setText("Điểm hiện tại: " + sudokuGame.getCurrentScore());
             timerHandler.postDelayed(this, 1000);
         }
@@ -244,7 +249,7 @@ public class SudokuActivity extends AppCompatActivity {
         mistakeCount = 0;
         tvMistake.setText("Lỗi: 0/3");
 
-        hintLeft = prefs.getInt("hintLeft", 3); // ✅ load hintLeft
+        hintLeft = prefs.getInt("hintLeft", 3);
         tvHintCount.setText(String.valueOf(hintLeft));
 
         currentDifficulty = prefs.getString("difficulty", "medium");
@@ -292,7 +297,7 @@ public class SudokuActivity extends AppCompatActivity {
                 .putString("difficulty", currentDifficulty)
                 .putLong("score", sudokuGame.getCurrentScore())
                 .putLong("startTime", startTime)
-                .putInt("hintLeft", hintLeft) // ✅ save hintLeft
+                .putInt("hintLeft", hintLeft)
                 .apply();
     }
 
@@ -392,9 +397,12 @@ public class SudokuActivity extends AppCompatActivity {
 
         if (mistakeCount >= 3) {
             stopTimer();
+            int finalScore = sudokuGame.getCurrentScore();
+            saveScoreToLeaderboard(finalScore);
+
             new AlertDialog.Builder(this)
                     .setTitle("💥 Thua cuộc")
-                    .setMessage("Bạn đã mắc quá 3 lỗi.\nBắt đầu ván mới?")
+                    .setMessage("Bạn đã mắc quá 3 lỗi.\nĐiểm: " + finalScore + "\nBắt đầu ván mới?")
                     .setPositiveButton("OK", (dialog, which) -> {
                         clearSavedGame();
                         showDifficultyDialog();
@@ -402,27 +410,6 @@ public class SudokuActivity extends AppCompatActivity {
                     .setCancelable(false)
                     .show();
         }
-    }
-
-    public long calculateScore(long elapsedMillis) {
-        int baseScore = 100000;
-        int difficultyMultiplier;
-
-        switch (currentDifficulty) {
-            case "easy":
-                difficultyMultiplier = 1;
-                break;
-            case "medium":
-                difficultyMultiplier = 2;
-                break;
-            case "hard":
-                difficultyMultiplier = 3;
-                break;
-            default:
-                difficultyMultiplier = 1;
-        }
-
-        return Math.max(100, (baseScore - elapsedMillis / 10) * difficultyMultiplier);
     }
 
     private void resetTimer() {

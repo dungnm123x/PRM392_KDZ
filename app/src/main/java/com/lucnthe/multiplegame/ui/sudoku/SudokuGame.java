@@ -8,6 +8,7 @@ public class SudokuGame {
     private boolean[][] fixedCells = new boolean[9][9];
     private boolean[][] scoredCells = new boolean[9][9];
     private int currentScore = 0;
+
     public SudokuGame(String difficulty) {
         board = SudokuGenerator.generateBoard(difficulty);
         fixedCells = new boolean[9][9];
@@ -18,6 +19,7 @@ public class SudokuGame {
             }
         }
     }
+
     public SudokuGame(int[][] board, boolean[][] fixedCells) {
         this.board = board;
         this.fixedCells = fixedCells;
@@ -41,7 +43,6 @@ public class SudokuGame {
             if (fixedCells[row][col]) return;
 
             int prev = board[row][col];
-
             if (prev == number) return;
 
             board[row][col] = number;
@@ -51,9 +52,7 @@ public class SudokuGame {
             } else {
                 boolean valid = isSafe(board, row, col, number);
                 errorCells[row][col] = !valid;
-                // - là số hợp lệ
-                // - trước đó là 0 (ô trống)
-                // - và ô này chưa được cộng điểm (scoredCells = false)
+
                 if (valid && prev == 0 && !scoredCells[row][col]) {
                     addScore(10);
                     scoredCells[row][col] = true;
@@ -115,12 +114,15 @@ public class SudokuGame {
         }
         return true;
     }
+
     public boolean[][] getErrorCells() {
         return errorCells;
     }
+
     public boolean[][] getFixedCells() {
         return fixedCells;
     }
+
     public int countNumber(int number) {
         int count = 0;
         for (int row = 0; row < 9; row++) {
@@ -132,11 +134,13 @@ public class SudokuGame {
         }
         return count;
     }
+
     public int getCurrentScore() {
         return currentScore;
     }
+
     public void addScore(int points) {
         currentScore += points;
+        if (currentScore < 0) currentScore = 0; // ✅ không cho âm điểm
     }
-
 }
