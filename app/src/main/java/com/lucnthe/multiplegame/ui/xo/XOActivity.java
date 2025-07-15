@@ -2,8 +2,8 @@ package com.lucnthe.multiplegame.ui.xo;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.widget.Button;
-
 import android.widget.GridLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,6 +41,12 @@ public class XOActivity extends AppCompatActivity {
 
         showGameModeDialog();
 
+        // ✅ Tính kích thước mỗi ô sao cho vuông
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int screenWidth = metrics.widthPixels;
+        int totalPadding = 32 + 10 * 2 + (SIZE - 1) * 8; // padding layout + grid padding + margin mỗi ô
+        int cellSize = (screenWidth - totalPadding) / SIZE;
+
         for (int row = 0; row < SIZE; row++) {
             for (int col = 0; col < SIZE; col++) {
                 final int r = row;
@@ -52,11 +58,11 @@ public class XOActivity extends AppCompatActivity {
                 button.setBackgroundColor(Color.LTGRAY);
 
                 GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-                params.width = 0;
-                params.height = 0;
-                params.rowSpec = GridLayout.spec(row, 1f);
-                params.columnSpec = GridLayout.spec(col, 1f);
-                params.setMargins(5, 5, 5, 5);
+                params.width = cellSize;
+                params.height = cellSize;
+                params.rowSpec = GridLayout.spec(row);
+                params.columnSpec = GridLayout.spec(col);
+                params.setMargins(4, 4, 4, 4); // viền giữa các ô
                 button.setLayoutParams(params);
 
                 button.setOnClickListener(v -> handleClick(r, c));
@@ -102,7 +108,6 @@ public class XOActivity extends AppCompatActivity {
                 .show();
     }
 
-
     private void handleClick(int row, int col) {
         if (gameEnded || !buttons[row][col].getText().toString().equals("")) return;
 
@@ -136,13 +141,13 @@ public class XOActivity extends AppCompatActivity {
 
         switch (difficultyLevel) {
             case EASY:
-                move = getFirstEmptyCell(); // chọn bừa
+                move = getFirstEmptyCell();
                 break;
             case MEDIUM:
-                move = getBestMove(ai, opponent); // ưu tiên chặn và thắng
+                move = getBestMove(ai, opponent);
                 break;
             case HARD:
-                move = getHardMove(ai, opponent); // chiến thuật tốt hơn
+                move = getHardMove(ai, opponent);
                 break;
             default:
                 move = getFirstEmptyCell();
@@ -153,7 +158,6 @@ public class XOActivity extends AppCompatActivity {
         }
     }
 
-
     private int[] getFirstEmptyCell() {
         for (int r = 0; r < SIZE; r++)
             for (int c = 0; c < SIZE; c++)
@@ -162,9 +166,7 @@ public class XOActivity extends AppCompatActivity {
         return null;
     }
 
-
     private int[] getBestMove(String aiSymbol, String opponentSymbol) {
-        // 1. Thắng nếu có thể
         for (int r = 0; r < SIZE; r++) {
             for (int c = 0; c < SIZE; c++) {
                 if (buttons[r][c].getText().toString().equals("")) {
@@ -178,7 +180,6 @@ public class XOActivity extends AppCompatActivity {
             }
         }
 
-        // 2. Chặn đối thủ
         for (int r = 0; r < SIZE; r++) {
             for (int c = 0; c < SIZE; c++) {
                 if (buttons[r][c].getText().toString().equals("")) {
@@ -192,7 +193,6 @@ public class XOActivity extends AppCompatActivity {
             }
         }
 
-        // 3. Ưu tiên gần trung tâm
         int center = SIZE / 2;
         int minDist = Integer.MAX_VALUE;
         int[] best = null;
@@ -225,31 +225,25 @@ public class XOActivity extends AppCompatActivity {
                 }
             }
         }
-
         return bestMove;
     }
 
     private int evaluateMove(int r, int c, String ai, String opponent) {
         int score = 0;
-
-        // Giả lập nước đi của AI
         buttons[r][c].setText(ai);
         if (checkWin(r, c)) score += 1000;
         buttons[r][c].setText("");
 
-        // Giả lập nếu đối thủ đánh vào đó
         buttons[r][c].setText(opponent);
         if (checkWin(r, c)) score += 500;
         buttons[r][c].setText("");
 
-        // Cộng điểm dựa trên vị trí gần trung tâm
         int center = SIZE / 2;
         int dist = Math.abs(r - center) + Math.abs(c - center);
         score += (10 - dist);
 
         return score;
     }
-
 
     private boolean checkWin(int row, int col) {
         String current = buttons[row][col].getText().toString();
@@ -261,7 +255,6 @@ public class XOActivity extends AppCompatActivity {
 
     private boolean checkLine(int row, int col, int dr, int dc, String player) {
         int count = 1;
-
         int r = row - dr, c = col - dc;
         while (inBounds(r, c) && buttons[r][c].getText().toString().equals(player)) {
             count++; r -= dr; c -= dc;
@@ -296,10 +289,10 @@ public class XOActivity extends AppCompatActivity {
             for (int c = 0; c < SIZE; c++)
                 buttons[r][c].setText("");
     }
+
     @Override
     public boolean onSupportNavigateUp() {
         finish();
         return true;
     }
-
 }
