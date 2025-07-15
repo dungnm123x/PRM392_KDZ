@@ -151,7 +151,16 @@ public class SudokuActivity extends AppCompatActivity {
             sudokuGame = new SudokuGame(currentDifficulty);
             boardView.setGame(sudokuGame);
             boardView.invalidate();
+
+            // ✅ Reset hint & UI
+            hintLeft = 3;
+            tvHintCount.setText("3");
+            mistakeCount = 0;
+            tvMistake.setText("Lỗi: 0/3");
+
             resetTimer();
+            updateCurrentScoreView();
+            updateKeyboardStatus();
         });
 
         btnNew.setOnClickListener(v -> {
